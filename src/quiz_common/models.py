@@ -1,6 +1,6 @@
 """Shared data models used by quiz components."""
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class Option(BaseModel):
@@ -8,6 +8,14 @@ class Option(BaseModel):
 
     answer: str
     correct: bool
+
+    @field_validator("answer", mode="before")
+    @classmethod
+    def convert_to_string(cls, v: str | bool | float) -> str:  # noqa: FBT001
+        """Allow int, float, bool and convert them to string."""
+        if isinstance(v, (int, float, bool)):
+            return str(v)
+        return v
 
 
 class Question(BaseModel):
